@@ -8,14 +8,7 @@ async function getData(location) {
         }
 
         const data = await response.json();
-        // console.log(data);
-        // console.log({
-        //     conditions: data.currentConditions.conditions,
-        //     temp: data.currentConditions.temp,
-        //     feelslike: data.currentConditions.feelslike,
-        //     windspeed: data.currentConditions.windspeed,
-        //     humidity: data.currentConditions.humidity,
-        // });
+        console.log(data);
         return {
             conditions: data.currentConditions.conditions,
             temp: data.currentConditions.temp,
@@ -25,6 +18,7 @@ async function getData(location) {
         };
     } catch (error) {
         console.error(error.message);
+        throw error;
     }
 }
 
@@ -36,7 +30,7 @@ function displayWeather(location, data) {
     const windspeedP = document.querySelector(".wind-speed");
     const humidityP = document.querySelector(".humidity");
 
-    cityH3.textContent = location;
+    cityH3.textContent = location.charAt(0).toUpperCase() + location.slice(1); //Capitalize first letter of location
     conditionP.textContent = data.conditions;
     temperatureH2.textContent = `${data.temp}°C`;
     feelslikeP.textContent = `Feels like: ${data.feelslike}°C`;
@@ -45,8 +39,13 @@ function displayWeather(location, data) {
 }
 
 async function controller(location = "Thessaloniki") {
-    const data = await getData(location);
-    displayWeather(location, data);
+    try {
+        const data = await getData(location);
+        displayWeather(location, data);
+    } catch (error) {
+        const errorP = document.querySelector(".error");
+        errorP.textContent = "Error fetching data";
+    }
 }
 
 formButton = document.querySelector("button");
@@ -54,7 +53,9 @@ formButton.addEventListener("click", (e) => {
     e.preventDefault();
     const input = document.querySelector("input");
     const location = input.value;
+    const errorP = document.querySelector(".error");
+    errorP.textContent = "";
     controller(location);
 });
 
-controller().then(() => console.log("Weather data loaded"));
+controller();
