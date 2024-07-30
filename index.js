@@ -9,6 +9,13 @@ async function getData(location) {
 
         const data = await response.json();
         // console.log(data);
+        // console.log({
+        //     conditions: data.currentConditions.conditions,
+        //     temp: data.currentConditions.temp,
+        //     feelslike: data.currentConditions.feelslike,
+        //     windspeed: data.currentConditions.windspeed,
+        //     humidity: data.currentConditions.humidity,
+        // });
         return {
             conditions: data.currentConditions.conditions,
             temp: data.currentConditions.temp,
@@ -21,4 +28,33 @@ async function getData(location) {
     }
 }
 
-// getData("Thessaloniki").then((data) => console.log(data));
+function displayWeather(location, data) {
+    const cityH3 = document.querySelector(".city");
+    const conditionP = document.querySelector(".condition");
+    const temperatureH2 = document.querySelector(".temperature");
+    const feelslikeP = document.querySelector(".feels-like");
+    const windspeedP = document.querySelector(".wind-speed");
+    const humidityP = document.querySelector(".humidity");
+
+    cityH3.textContent = location;
+    conditionP.textContent = data.conditions;
+    temperatureH2.textContent = `${data.temp}°C`;
+    feelslikeP.textContent = `Feels like: ${data.feelslike}°C`;
+    windspeedP.textContent = `Wind speed: ${data.windspeed} km/h`;
+    humidityP.textContent = `Humidity: ${data.humidity}%`;
+}
+
+async function controller(location = "Thessaloniki") {
+    const data = await getData(location);
+    displayWeather(location, data);
+}
+
+formButton = document.querySelector("button");
+formButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const input = document.querySelector("input");
+    const location = input.value;
+    controller(location);
+});
+
+controller().then(() => console.log("Weather data loaded"));
